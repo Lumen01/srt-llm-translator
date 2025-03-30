@@ -5,6 +5,9 @@ openai:
   model: "deepseek-chat"
   max_tokens: 4096  # 添加最大令牌数，deepseek-chat 接口最大支持 8192 tokens
   temperature: 0.3  # 添加温度参数，较低的值使输出更稳定
+  prompt_cache_hit_tokens_price_per_1m: 0.5  # 缓存命中的 tokens 数（0.5元/百万tokens）
+  prompt_cache_miss_tokens_price_per_1m: 2.0  # 缓存未命中的 tokens 数（2元/百万tokens）
+  completion_tokens_price_per_1m: 8.0  # 输出 tokens 数（8元/百万tokens）
 
 # 翻译配置
 translation:
@@ -12,6 +15,10 @@ translation:
   max_concurrent_calls: 20  # 最大并发请求数
   parallel_workers: 8  # 新增：并行工作线程数
 
+# 字幕输出配置
+output:
+  reindex_subtitles: false  # 设置为 true 将重新编号字幕，false 保持原始编号
+
 # 日志配置
 logging:
-  level: WARNING  # 可选值：DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: INFO  # 可选值：DEBUG, INFO, WARNING, ERROR, CRITICAL

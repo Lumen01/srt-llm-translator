@@ -6,6 +6,12 @@ LLM 字幕翻译器是一款基于 Python 的工具，使用大型语言模型�
 
 **更新**
 
+update-20250331
+
+- 优化 Prompt 信息，大幅提升输入 tokens 命中率
+- 增加 tokens 消费数量及成本详情预估
+- 优化日志输出
+
 update-20250330
 
 - 改进批量处理功能，巨幅提升翻译效率
@@ -47,6 +53,7 @@ update-20250330
 ```bash
 # 翻译单个 SRT 文件：
 python srt_llm_translator.py --target-lang <目标语言代码> --file <源文件.srt>
+
 # 批量翻译多个SRT文件：
 python srt_llm_translator.py --target-lang <目标语言代码> --folder <目录路径>
 ```
