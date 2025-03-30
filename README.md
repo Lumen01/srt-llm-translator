@@ -1,102 +1,97 @@
-# SRT LLM Translator
+# LLM 字幕翻译器
 
-## Overview
-The SRT LLM Translator is a Python-based tool that translates subtitles from one language to another using large language models. It preserves the original timestamps of the subtitles, making it easy to integrate translated subtitles back into video files.
+## 概述
 
-## Features
-- Translates SRT subtitle files to a specified target language.
-- Maintains original timestamps for seamless integration.
-- Utilizes OpenAI's API for translation.
+LLM 字幕翻译器是一款基于 Python 的工具，使用大型语言模型实现字幕的跨语言翻译。该工具会保留字幕的原始时间戳，输出目标语言的字幕文件。该工具使用符合 OpenAI API 标准的 API 进行翻译，国内可使用 DeepSeek、火山引擎等
 
-## Requirements
+**更新**
+
+update-20250330
+
+- 改进批量处理功能，巨幅提升翻译效率
+- 增加配置文件，丰富配置项，方便对翻译参数进行微调
+- 增加日志功能，可输出详细日志方便 debug
+
+**环境要求**
+
 - Python 3.x
-- OpenAI API key
-- Required Python packages:
+- LLM 服务 API 密钥
+- 所需 Python 包：
   - `openai`
   - `srt`
 
-## Installation
-1. Clone the repository:
+## 安装使用
+
+**安装**
+
+1. 克隆仓库：
+
     ```bash
     git clone <repository-url>
     cd <repository-directory>
     ```
 
-2. Install the required packages:
+2. 安装依赖包：
     ```bash
     pip install -r requirements.txt
     ```
 
-3. Set up your OpenAI API key and optionally change the default model:
+3. 修改配置文件：
     ```bash
-    export OPENAI_API_KEY='your_OpenAI_api_key'
-    export OPENAI_MODEL='gpt-4o-mini'
+    cp config.sample.yml config.yml
+    vim comfig.yml
     ```
 
-## Usage
-To translate an SRT file, run the following command:
-
-``` bash
-python srt_llm_translator.py --target-lang <target_language> --file <source_file.srt>
-```
-
-To translate multiple SRT files, run the following command:
-
-``` bash
-python srt_llm_translator.py --target-lang <target_language> --folder <path/to/dir>
-```
-
-### Parameters
-- `--target-lang`: The language code for the target language (e.g., `en` for English, `es` for Spanish).
-- `--source-lang`: Optional source language code, defaults to auto-detection if not specified.
-- `--file`: The path to the source SRT file.
-- `--folder`: The path to a directory where your source SRT files are.
-
-## Example
-
-``` bash
-python srt_llm_translator.py --target-lang es --file sample/sample.srt
-```
-
-## Other models
-
-You can use other models by overwritting the following environment variables:
-
-### OpenRouter
-
-``` bash
-export OPENAI_API_URL=https://openrouter.ai/api/v1
-export OPENAI_API_KEY='your_OpenRouter_api_key'
-export OPENAI_MODEL=meta-llama/llama-3.2-3b-instruct
-```
-
-### Google Gemini
+**使用方式**
 
 ```bash
-export OPENAI_API_URL=https://generativelanguage.googleapis.com/v1beta/openai
-export OPENAI_API_KEY='your_gemini_api_key'
-export OPENAI_MODEL=gemini-1.5-flash
+# 翻译单个 SRT 文件：
+python srt_llm_translator.py --target-lang <目标语言代码> --file <源文件.srt>
+# 批量翻译多个SRT文件：
+python srt_llm_translator.py --target-lang <目标语言代码> --folder <目录路径>
 ```
 
-### xAI Grok
+`<目标语言代码>` 除了可以是标准的代码，比如 `zh-CN`、`zh-TW`、`zh-HK`、`yue`、`es`，也可以是口语化的内容，比如`中文`、`粤语`、`日文`，甚至方言也可以，比如`广东话`、`河南话`、`四川话`。
 
 ```bash
-export OPENAI_API_URL=https://api.x.ai/v1
-export OPENAI_API_KEY='your_xAI_api_key'
-export OPENAI_MODEL=grok-beta
+# 翻译单个 SRT 文件为普通话
+python srt_llm_translator.py --target-lang "zh-CN" --file sample/sample.srt
+
+# 翻译单个 SRT 文件为粤语
+python srt_llm_translator.py --target-lang "zh-HK" --file sample/sample.srt
+# 或
+python srt_llm_translator.py --target-lang "yue" --file sample/sample.srt
 ```
 
-## Cost and Performance
+*※注意：翻译为方言有可能因为语法问题导致条目的缺失，但是程序会以原字幕补充。*
 
-The cost and performance of the translator were tested with xAI's grok-beta model (priced at $5/M token input and $15/M output). With this model, a 1-hour SRT file (approximately 500 phrases) cost around $0.25 and took 6 minutes to process. In contrast, using OpenAI's GPT 4o-mini model (priced at $0.15/M token input and $0.60/M output), the same 1-hour SRT file cost less than $0.01, but took nearly 8 minutes to process.
+参数说明
 
-Due to the poor time performance observed with the initial implementation, I decided to introduce parallelism in the translation process. The results were significant, as shown in the table below:
+- `--target-lang`: 目标语言代码（如`en`表示英语，`es`表示西班牙语）
+- `--source-lang`: 可选的源语言代码，默认自动检测
+- `--file`: 源SRT文件路径
+- `--folder`: 包含多个SRT文件的目录路径
 
-| Thread count | xAI Grok-beta | OpenAI GPT 4o-mini |
-| ------------ | ------------- | ------------------ |
-| 1            | 6 min         | 8 min              |
-| 10           | 50 sec        | 45 sec             |
-| 20 (default) | 30 sec        | 25 sec             |
-| 50           | 75 sec        | 12 sec             |
+## 成本与性能
+源项目对单条字幕进行提交翻译，即使采用并发请求也不能大幅提升翻译速度，而且容易触发接口并发限制。
 
-The translation time has been significantly reduced, but Grok was unable to handle the 50 parallel requests. The thread count can be defined using the MAX_CONCURRENT_CALLS environment variable, which I have set to 20 as the default, just to be safe. However, GPT 4o-mini can handle 50 threads without any issues.
+本项目改进了批量翻译的逻辑，采用一次调用提交多条字幕（通过`batch_size`控制）同时可以设定并行工作线程数量（通过 `parallel_workers` 控制）的方式大幅提升翻译性能。
+
+以下是对一个 512 个条目的英文字幕内容进行简体中文的测试结果：
+
+| batch_size | parallel_workers | 耗时         | 速率                      |
+| ---------- | ---------------- | ------------ | ------------------------- |
+| 8          | 4                | 55.1 sec     | 9.30 eps，277.61 tps      |
+| 8          | 8                | 53.0 sec     | 9.67 eps，288.30 tps      |
+| 8          | 16               | 52.2 sec     | 9.81 eps，293.04 tps      |
+| 16         | 8                | 44.7 sec     | 11.45 eps，340.20 tps     |
+| 16         | 16               | 42.4 sec     | 12.09 eps，358.29 tps     |
+| **32**     | **8**            | **40.5 sec** | **12.65 eps，371.66 tps** |
+| 32         | 16               | 41.8 sec     | 12.24 eps，360.64 tps     |
+
+- 从测试结果来看
+  - `batch_size` 过小的情况下是，提高 `parallel_workers` 对效率提升不大。
+  - `batch_size` 设为 32 同时 `parallel_workers` 设为 8 的情况下比较理想。
+  - 假设 2 小时的电影台词数为测试量的4倍即 2048 条台词来计算，可以在 3分钟内能完成字幕翻译。
+- 测试使用 DeepSeek 模型，请参考[官方文档](https://api-docs.deepseek.com/zh-cn/quick_start/pricing/)。
+- 不同服务商对于并发请求限制不一样，请根据官方文档来设置并发参数 `max_concurrent_calls` 以实现效率最大化。

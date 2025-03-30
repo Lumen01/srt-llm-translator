@@ -21,3 +21,6 @@ __pycache__
 *.temp
 
 translated.srt
+
+config.yaml
+config.yml

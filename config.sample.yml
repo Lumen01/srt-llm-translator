@@ -1,0 +1,17 @@
+# OpenAI API 配置
+openai:
+  api_key: "your-api-key"
+  api_url: "https://api.deepseek.com/v1"
+  model: "deepseek-chat"
+  max_tokens: 4096  # 添加最大令牌数，deepseek-chat 接口最大支持 8192 tokens
+  temperature: 0.3  # 添加温度参数，较低的值使输出更稳定
+
+# 翻译配置
+translation:
+  batch_size: 32  # 每批处理的字幕数量
+  max_concurrent_calls: 20  # 最大并发请求数
+  parallel_workers: 8  # 新增：并行工作线程数
+
+# 日志配置
+logging:
+  level: WARNING  # 可选值：DEBUG, INFO, WARNING, ERROR, CRITICAL
